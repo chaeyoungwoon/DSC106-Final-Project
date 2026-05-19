@@ -15,7 +15,6 @@ import os, warnings
 warnings.filterwarnings("ignore")
 os.makedirs("figures", exist_ok=True)
 
-# ── font picker ────────────────────────────────────────────────────────────────
 import matplotlib.font_manager as _fm
 _available = set(f.name for f in _fm.fontManager.ttflist)
 _candidates = [
@@ -116,9 +115,7 @@ n_db = int(df["double_burden"].sum())
 print(f"  high-burden counties: {n_db}")
 
 
-# ==============================================================================
 # FIG 1 -- Histogram
-# ==============================================================================
 print("Figure 1...")
 
 fig, ax = plt.subplots(figsize=(9, 5.5))
@@ -179,9 +176,7 @@ plt.close()
 print("  saved fig1")
 
 
-# ==============================================================================
 # FIG 2 -- Scatter
-# ==============================================================================
 print("Figure 2...")
 
 sdf = df[["poverty","food","rural","double_burden"]].dropna(subset=["poverty","food"]).copy()
@@ -255,9 +250,7 @@ plt.close()
 print("  saved fig2")
 
 
-# ==============================================================================
 # FIG 3 -- Race bars
-# ==============================================================================
 print("Figure 3...")
 
 race_groups = [
@@ -328,9 +321,7 @@ plt.close()
 print("  saved fig3")
 
 
-# ==============================================================================
 # FIG 4 -- Correlation bars
-# ==============================================================================
 print("Figure 4...")
 
 corr_pairs = [
@@ -423,11 +414,9 @@ plt.close()
 print("  saved fig4")
 
 
-# ==============================================================================
 # FIG 5 -- Strip plots
 # Layout: title block at very top, definition box below it, then panels,
 # then legend at bottom. Nothing overlaps because each zone has a fixed y range.
-# ==============================================================================
 print("Figure 5...")
 
 panels = [
@@ -499,7 +488,6 @@ for ax, (key, label, tfm, tstat) in zip(axes, panels):
             transform=ax.transAxes, ha="center", va="top",
             fontsize=7.5, color=C_RED, linespacing=1.4)
 
-# ── title block: three separate lines with known y positions ───────────────────
 # main claim
 fig.text(0.015, 0.97,
     "High-burden counties score worse on every health measure -- not just poverty",
@@ -522,7 +510,6 @@ fig.text(0.015, 0.885, def_text,
     bbox=dict(facecolor="#EDE8E0", edgecolor=C_AMBER,
               boxstyle="round,pad=0.5", linewidth=1.0))
 
-# ── legend at bottom ───────────────────────────────────────────────────────────
 handles = [
     mpatches.Patch(color=C_AMBER, label=f"High-burden counties (n = {n_db})"),
     mpatches.Patch(color=C_STONE, label="All other counties"),
@@ -537,9 +524,7 @@ plt.close()
 print("  saved fig5")
 
 
-# ==============================================================================
 # FIG 6 -- State bar chart
-# ==============================================================================
 print("Figure 6...")
 
 state_db = (
