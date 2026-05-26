@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Compounding Crisis</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <div id="tooltip" role="tooltip" aria-hidden="true">
+    <div class="tt-name" id="tt-name"></div>
+    <div class="tt-row"><span class="tt-key">Child poverty</span><span class="tt-val" id="tt-poverty"></span></div>
+    <div class="tt-row"><span class="tt-key">Food insecurity</span><span class="tt-val" id="tt-food"></span></div>
+    <div class="tt-row"><span class="tt-key">Mental distress</span><span class="tt-val" id="tt-mental"></span></div>
+    <div class="tt-row"><span class="tt-key">Drug overdose</span><span class="tt-val" id="tt-drug"></span></div>
+    <div class="tt-badge" id="tt-badge">Double-burden county</div>
+  </div>
+
+  <nav class="site-nav">
+    <span class="nav-brand">The Compounding Crisis</span>
+    <ul class="nav-links">
+      <li><a href="#section-map">01 Geography</a></li>
+      <li><a href="#section-scatter">02 Correlation</a></li>
+      <li><a href="#section-race">03 Race</a></li>
+      <li><a href="#section-strip">04 Compounding</a></li>
+      <li><a href="#section-dotplot">05 Overdose</a></li>
+      <li><a href="#section-writeup">Writeup</a></li>
+    </ul>
+
+    <!-- county search in nav bar -->
+    <div class="nav-search">
+      <input type="text" id="county-search" placeholder="Search a county&hellip;" autocomplete="off" />
+      <ul id="search-results"></ul>
+    </div>
+  </nav>
+
+  <div class="page-wrap">
+
+    <header class="site-header">
+      <div class="header-text">
+        <div class="kicker">DSC 106 Final Project &bull; County Health Rankings 2025 &bull; 3,143 U.S. Counties</div>
+        <h1 class="project-title">The Compounding Crisis</h1>
+        <p class="project-subtitle">
+          Child poverty, food insecurity, and mental distress fall on the same 520 counties.
+          The children in those places are not a random cross-section of the country.
+        </p>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-stack">
+          <div class="stat-card">
+            <div class="stat-num" data-target="520" data-decimals="0">520</div>
+            <div class="stat-label">double-burden counties<br>top quartile on poverty + food insecurity</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">r = 0.768</div>
+            <div class="stat-label">poverty vs. food insecurity<br>Pearson r, n = 3,143 counties</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" data-target="34.9" data-decimals="1" data-suffix="%">34.9%</div>
+            <div class="stat-label">mean poverty, Black children<br>vs. 14.0% for White children</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num">r = &minus;0.087</div>
+            <div class="stat-label">mental health providers vs. poverty<br>near zero, not significant</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-byline">
+        <div class="byline">
+          CHR&amp;R 2025 &bull; University of Wisconsin Population Health Institute<br>
+          Robert Wood Johnson Foundation &bull; SAIPE/ACS 2023 &bull; NCHS 2020-22
+        </div>
+      </div>
+    </header>
+
+    <!-- VIZ 1 -->
+    <section class="viz-section" id="section-map">
+      <div class="section-sidebar">
+        <div class="section-num">01 / Geography</div>
+        <h2 class="section-title">Where child poverty concentrates</h2>
+        <p class="section-body">
+          Every U.S. county shaded by its child poverty rate. The amber border marks
+          the 520 double-burden counties, those in the top quartile on both child
+          poverty and food insecurity simultaneously.
+        </p>
+        <p class="section-body">
+          Drag the slider to raise the poverty threshold. Counties below it fade out,
+          revealing how the Delta and Appalachian clusters emerge as the bar rises.
+        </p>
+        <p class="section-body">
+          Hover any county to see its full profile. Click to highlight it in
+          the scatter plot below.
+        </p>
+        <div class="note">
+          SAIPE/ACS 2023. Child poverty = share of children under 18 below the
+          federal poverty line.
+        </div>
+      </div>
+      <div class="section-main">
+        <div class="viz-frame">
+          <div class="viz-caption">Fig 1 &mdash; Child Poverty Rate, All 3,143 U.S. Counties &mdash; SAIPE / ACS 2023</div>
+          <div class="slider-row">
+            <span class="slider-label">Show counties with poverty above</span>
+            <input type="range" id="poverty-slider" min="0" max="54" value="0" step="1" />
+            <span class="slider-value" id="slider-val">0%</span>
+            <span class="slider-count" id="slider-count"></span>
+          </div>
+          <div id="map-container"><div class="viz-loading">Loading map&hellip;</div></div>
+          <div class="map-legend" id="map-legend">
+            <span class="legend-label">0%</span>
+            <svg width="160" height="10" id="legend-gradient-svg"></svg>
+            <span class="legend-label">54%+</span>
+            <div class="double-swatch-item">
+              <div class="double-swatch"></div>
+              <span class="legend-label">Double-burden county</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIZ 2 -->
+    <section class="viz-section" id="section-scatter">
+      <div class="section-sidebar">
+        <div class="section-num">02 / Correlation</div>
+        <h2 class="section-title">Where poverty rises, hunger follows</h2>
+        <p class="section-body">
+          The r = 0.768 correlation between child poverty and food insecurity is one
+          of the strongest county-level relationships in the dataset.
+        </p>
+        <p class="section-body">
+          Dashed lines mark the 75th percentile on each axis. Three named counties mark
+          the geographic corridors: Holmes County (Mississippi Delta), Menominee County
+          (tribal nations), and Ziebach County (Great Plains).
+        </p>
+        <p class="section-body">
+          The state filter highlights one state while keeping all others visible. You can
+          also search for a specific county in the nav bar above.
+        </p>
+        <div class="note">
+          All language describes co-occurrence. No causal direction is implied.
+        </div>
+      </div>
+      <div class="section-main">
+        <div class="viz-frame">
+          <div class="viz-caption">Fig 2 &mdash; Child Poverty vs. Food Insecurity, n = 3,143 Counties &mdash; CHR&amp;R 2025</div>
+          <div class="controls">
+            <span class="control-label">State:</span>
+            <select class="control-select state-select" id="scatter-state-select">
+              <option value="all">All states</option>
+            </select>
+            <span class="linked-state-banner" id="scatter-banner"></span>
+          </div>
+          <div id="scatter-container"><div class="viz-loading">Loading&hellip;</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIZ 3 -->
+    <section class="viz-section" id="section-race">
+      <div class="section-sidebar">
+        <div class="section-num">03 / Race</div>
+        <h2 class="section-title">The racial gap varies by state</h2>
+        <p class="section-body">
+          In a typical county, Black children face a poverty rate of 34.9%, more than
+          twice the 14.0% rate for White children (t = 42.07, p &lt; 0.001). AIAN
+          children average 29.1% (t = 20.58 vs. White).
+        </p>
+        <p class="section-body">
+          Use the state filter to find states like Wisconsin or South Dakota where the
+          AIAN gap is far wider than the national average suggests.
+        </p>
+        <div class="note">
+          County-level means, not population-weighted national rates. SAIPE suppresses
+          subgroup estimates for small denominators: Black n = 1,642; AIAN n = 807;
+          Hispanic n = 2,488; White n = 3,065.
+        </div>
+      </div>
+      <div class="section-main">
+        <div class="viz-frame">
+          <div class="viz-caption">Fig 3 &mdash; Mean County-Level Child Poverty by Race &mdash; SAIPE / ACS 2023</div>
+          <div class="controls">
+            <span class="control-label">State:</span>
+            <select class="control-select state-select" id="race-state-select">
+              <option value="all">All states</option>
+            </select>
+            <span class="linked-state-banner" id="race-banner"></span>
+          </div>
+          <div id="race-container"><div class="viz-loading">Loading&hellip;</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIZ 4 -->
+    <section class="viz-section" id="section-strip">
+      <div class="section-sidebar">
+        <div class="section-num">04 / Compounding</div>
+        <h2 class="section-title">The same 520 counties score worse on every outcome</h2>
+        <p class="section-body">
+          Double-burden counties are elevated on food insecurity and child poverty by
+          definition. They are also significantly worse on mental distress (t = 42.50),
+          drug overdose deaths (t = 11.90), uninsured children (t = 7.96), and child
+          care cost burden (t = 10.06).
+        </p>
+        <p class="section-body">
+          Each amber dot is one double-burden county. Each gray dot is one of the
+          remaining 2,623. Horizontal lines mark the group means. Hover any dot.
+        </p>
+        <div class="note">
+          Mental health provider availability is not shown. It has near-zero correlation
+          with poverty (r = &minus;0.087, not significant). The mental distress in these
+          counties is real (r = 0.607 with poverty), but provider shortage is not what
+          drives the gap.
+        </div>
+      </div>
+      <div class="section-main">
+        <div class="viz-frame">
+          <div class="viz-caption">Fig 4 &mdash; Double-Burden vs. All Other Counties, 5 Outcomes &mdash; CHR&amp;R 2025</div>
+          <div id="strip-wrapper" class="strip-wrap">
+            <div class="viz-loading">Loading&hellip;</div>
+          </div>
+          <div id="strip-legend"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIZ 5 -->
+    <section class="viz-section" id="section-dotplot">
+      <div class="section-sidebar">
+        <div class="section-num">05 / Overdose</div>
+        <h2 class="section-title">Poverty and overdose deaths cluster in the same states</h2>
+        <p class="section-body">
+          Among counties where child poverty exceeds 25%, West Virginia, Kentucky, and
+          Ohio have the highest mean drug overdose death rates in the country.
+          McDowell County, WV (180.7 per 100,000, 36.9% poverty) and Menominee
+          County, WI (122.8 per 100,000, 45.5% poverty) sit at the top of a
+          continuous distribution.
+        </p>
+        <p class="section-body">
+          Click any state dot to filter the map and scatter to that state.
+          A "clear filter" link appears to reset all views at once.
+        </p>
+        <div class="note">
+          Overdose estimates suppressed for counties with fewer than 10 deaths
+          (2020-22). States with fewer than 3 qualifying counties are excluded.
+          2,010 of 3,143 counties have valid estimates.
+        </div>
+      </div>
+      <div class="section-main">
+        <div class="viz-frame">
+          <div class="viz-caption">Fig 5 &mdash; Mean Drug Overdose Rate, High-Poverty Counties by State &mdash; NCHS 2020-22</div>
+          <div id="dotplot-container"><div class="viz-loading">Loading&hellip;</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WRITEUP -->
+    <section class="writeup-section" id="section-writeup">
+      <div class="writeup-inner">
+        <div class="section-num">Progress Report</div>
+        <h2 class="section-title">What we have done and what comes next</h2>
+
+        <div class="writeup-q">1. What have we done so far?</div>
+
+        <p>
+          We downloaded and cleaned the County Health Rankings and Roadmaps 2025 analytic
+          CSV (3,152 rows, 796 columns), dropping the CHR description row, all 51
+          state-level aggregate rows, and the national summary row to arrive at 3,143
+          counties. We identified 17 core variables across child poverty, food insecurity,
+          mental distress, drug overdose deaths, racial subgroup poverty estimates, and
+          provider access.
+        </p>
+        <p>
+          We ran the full pairwise correlation structure on valid county observations,
+          confirming r = 0.768 between child poverty and food insecurity, r = 0.607
+          between mental distress and poverty, and r = &minus;0.087 between mental health
+          provider availability and poverty. We defined double-burden counties as those in
+          the top quartile on both child poverty and food insecurity simultaneously,
+          arriving at 520 counties concentrated in Texas, Mississippi, Kentucky, Arkansas,
+          and four other Southern and Appalachian states.
+        </p>
+        <p>
+          All five D3.js visualizations are working with cross-view interactivity: a
+          county choropleth with a poverty threshold slider, a scatterplot with named
+          county annotations and county search, a race bar chart that recomputes live per
+          state, five small-multiple strip plots with hover tooltips, and a Cleveland dot
+          plot where clicking a state scrolls the viewer to the map and filters every
+          other chart simultaneously. A county search box in the nav bar lets viewers
+          look up any county by name and jump to it in the scatter.
+        </p>
+        <p>
+          Page-level features include animated stat counters on load, scroll-triggered
+          section reveals, and an active nav indicator that highlights the current
+          section. A shared event bus in main.js coordinates all cross-view state
+          changes.
+        </p>
+
+        <div class="writeup-q">2. What will be the most challenging part to design, and why?</div>
+
+        <p>
+          Full two-way county-level linked brushing across all five views is the hardest
+          remaining piece. The map and scatter currently exchange county highlights.
+          Extending that to the strip plots requires pre-classifying dots by FIPS at
+          draw time and using CSS class toggling on hover rather than a full D3 data join
+          update, because re-rendering 3,000 circles per panel on every hover is too slow.
+        </p>
+        <p>
+          The race bar chart under the state filter presents a design problem for small
+          states. When a viewer selects Vermont or Wyoming, the AIAN group may have only
+          three or four counties with valid estimates. A 95% CI on four data points is
+          statistically legitimate but visually misleading if the axis domain stays fixed
+          at the national range. We plan to rescale per state and annotate the n directly
+          on each bar, but the right threshold for a "too few counties" warning is still
+          a judgment we have not settled.
+        </p>
+        <p>
+          The strip plots need a responsive fallback for narrow viewports. Five panels
+          side by side works at desktop width but collapses below 500px. We need a
+          ResizeObserver approach so the D3 drawing code knows the panel width at draw
+          time and can set font sizes and margins accordingly.
+        </p>
+        <p>
+          Finally, every annotation across the five charts needs an editorial revision.
+          Right now the t-statistics and r-values are stated as raw numbers. For the
+          final deliverable each annotation should carry a short phrase explaining why
+          that number matters to a general reader, and fitting that copy into available
+          SVG space at multiple viewport widths is both a writing and a layout problem
+          that will take more iteration than the D3 code itself.
+        </p>
+      </div>
+    </section>
+
+  </div>
+
+  <footer class="site-footer">
+    Data: County Health Rankings and Roadmaps 2025, University of Wisconsin Population Health
+    Institute / Robert Wood Johnson Foundation &bull;
+    County boundaries: US Census TIGER/Line via topojson-us-atlas 3.0.1 &bull;
+    Built with D3.js v7
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <script src="js/choropleth.js?v=1779835449"></script>
+  <script src="js/scatter.js?v=1779835449"></script>
+  <script src="js/racechart.js?v=1779835449"></script>
+  <script src="js/stripplots.js?v=1779835449"></script>
+  <script src="js/dotplot.js?v=1779835449"></script>
+  <script src="js/main.js?v=1779835449"></script>
+
+</body>
+</html>
