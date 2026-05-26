@@ -8,9 +8,9 @@ Child poverty, food insecurity, and mental distress across America's counties.
 ## Repo structure
 
 ```
-index.html          main page and narrative shell
+index.html          main page 
 css/
-  style.css         all styling (dark editorial theme)
+  style.css         all styling
 js/
   main.js           data loading, shared state, event bus, tooltip
   choropleth.js     Viz 1: US county choropleth
@@ -19,7 +19,7 @@ js/
   stripplots.js     Viz 4: small-multiple strip plots
   dotplot.js        Viz 5: state overdose dot plot
 data/
-  analytic_data2025_v3.csv   (you must add this -- see below)
+  analytic_data2025_v3.csv   
 figures/
   fig1_poverty_histogram.png      (from proposal)
   fig2_poverty_food_scatter.png
