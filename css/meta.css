@@ -371,3 +371,60 @@
   font-weight: 400;
   color: #bbb;
 }
+
+/* ── Below-map county detail panel ──────────────────────────────────────────── */
+.county-detail-panel {
+  width: 100%;
+  max-width: 1140px;
+  margin-top: 18px;
+  padding: 20px 24px 24px;
+  border-radius: 16px;
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.county-detail-panel.hidden {
+  display: none;
+}
+
+.county-detail-panel h3 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.detail-metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+@media (max-width: 800px) {
+  .detail-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.detail-card {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f7f7f7;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.detail-card .detail-label {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+}
+
+.detail-card strong {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #111;
+}

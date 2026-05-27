@@ -119,29 +119,24 @@ function drawStateBorders() {
 
 // ── Click-to-zoom ─────────────────────────────────────────────────────────────
 
-function onCountyClick(event, d) {
-  event.stopPropagation();  // don't bubble up to the SVG background handler
-
-  const fips = d.id;
-
-  // Clicking the already-selected county resets the view.
-  if (fips === selectedFips) {
-    resetZoom();
-    return;
-  }
-
+// Shared selection logic used by both county-path clicks and label-card clicks.
+function activateCounty(fips, feature) {
+  if (fips === selectedFips) { resetZoom(); return; }
   selectedFips = fips;
-  stopCycle();   // freeze the metric while the user is inspecting a county
-
-  // Apply selected highlight to the clicked county; fade everything else.
+  stopCycle();
   countiesGroup.selectAll("path.county")
     .classed("selected", d => d.id === fips)
     .classed("faded",    d => d.id !== fips);
-
-  zoomToCounty(d);
-  updateDetailPanel(countyData.get(fips));
-
+  zoomToCounty(feature);
+  const row = countyData.get(fips);
+  updateDetailPanel(row);
+  updateCountyDetailPanel(row);
   document.getElementById("reset-zoom").disabled = false;
+}
+
+function onCountyClick(event, d) {
+  event.stopPropagation();
+  activateCounty(d.id, d);
 }
 
 function zoomToCounty(d) {
@@ -173,6 +168,7 @@ function resetZoom() {
     .call(zoom.transform, d3.zoomIdentity);
 
   clearDetailPanel();
+  updateCountyDetailPanel(null);
   document.getElementById("reset-zoom").disabled = true;
   startCycle();  // resume auto-cycling now that the user is back at the full map
 }
@@ -211,6 +207,28 @@ function updateDetailPanel(row) {
 function clearDetailPanel() {
   document.getElementById("detail-panel").innerHTML =
     `<p class="detail-hint">Click any county to see details.</p>`;
+}
+
+// ── Below-map county detail panel ─────────────────────────────────────────────
+
+function updateCountyDetailPanel(row) {
+  const section = document.getElementById("county-detail-panel");
+  if (!row) {
+    section.classList.add("hidden");
+    return;
+  }
+  section.classList.remove("hidden");
+  document.getElementById("detail-county-name").textContent =
+    `${row.county}, ${row.state}`;
+  // Iterate METRICS so this stays in sync with any future metric additions.
+  Object.entries(METRICS).forEach(([key, meta]) => {
+    const el = document.getElementById(`detail-${key}`);
+    if (!el) return;
+    const v = +row[key];
+    el.textContent = isNaN(v) ? "No data" : meta.format(v);
+  });
+  // Scroll the panel into view so users don't miss it below the map.
+  section.scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
 
 // ── Top-county finder ─────────────────────────────────────────────────────────
@@ -298,6 +316,14 @@ function drawTopCountyOverlay(metric, colorScale) {
     .attr("x", 10)
     .attr("y", 41)
     .text(`${meta.label}: ${valStr}`);
+
+  // Make the whole card clickable — zooms into the top county.
+  // feature and topFips are already in scope from the parent function.
+  g.style("cursor", "pointer")
+    .on("click", (event) => {
+      event.stopPropagation();
+      activateCounty(topFips, feature);
+    });
 }
 
 // ── Color update (runs on every metric change) ────────────────────────────────
