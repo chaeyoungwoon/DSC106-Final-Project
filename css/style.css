@@ -498,7 +498,7 @@ body {
 
 .strip-panel {
   flex: 1;
-  min-width: 112px;
+  min-width: 132px;
   background: var(--surface);
 }
 

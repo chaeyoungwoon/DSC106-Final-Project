@@ -21,9 +21,9 @@ function drawStripPlots(state){
   if(!wrapper) return;
   wrapper.innerHTML="";
 
-  const PANEL_H=310;
-  const PANEL_W=148;
-  const CX=74;
+  const PANEL_H=430;
+  const PANEL_W=174;
+  const CX=88;
 
   STRIP_PANELS.forEach((panel,pi)=>{
     const div=document.createElement("div");
@@ -42,7 +42,7 @@ function drawStripPlots(state){
 
     const svg=d3.select(div).append("svg")
       .attr("viewBox",`0 0 ${PANEL_W} ${PANEL_H}`)
-      .style("width","100%").style("overflow","visible")
+      .style("width","100%").style("height",`${PANEL_H}px`).style("overflow","visible")
       .style("background","#ede9de");
 
     // y axis
@@ -61,17 +61,17 @@ function drawStripPlots(state){
       .style("font-size","9px").style("font-family","'Fira Code', monospace")
       .text(panel.unit);
 
-    const jOth=lcgJitter(pi*1000+1,othPts.length,18);
-    const jDb =lcgJitter(pi*2000+1,dbPts.length, 18);
+    const jOth=lcgJitter(pi*1000+1,othPts.length,24);
+    const jDb =lcgJitter(pi*2000+1,dbPts.length, 24);
 
     svg.selectAll("circle.oth").data(othPts).join("circle").attr("class","oth")
       .attr("cx",(d,i)=>CX+jOth[i]).attr("cy",d=>yScale(d.val))
-      .attr("r",1.6).attr("fill","#b0a894").attr("opacity",0.5)
+      .attr("r",2.4).attr("fill","#b0a894").attr("opacity",0.58)
       .on("mousemove",(ev,d)=>showTooltip(ev,d)).on("mouseleave",hideTooltip);
 
     svg.selectAll("circle.db").data(dbPts).join("circle").attr("class","db")
       .attr("cx",(d,i)=>CX+jDb[i]).attr("cy",d=>yScale(d.val))
-      .attr("r",2.6).attr("fill","#a83318").attr("opacity",0.72)
+      .attr("r",4).attr("fill","#a83318").attr("opacity",0.82)
       .on("mousemove",(ev,d)=>showTooltip(ev,d)).on("mouseleave",hideTooltip);
 
     const dbMean =d3.mean(dbPts, d=>d.val);

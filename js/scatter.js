@@ -6,7 +6,7 @@ function drawScatter(state) {
 
   const margin = { top: 36, right: 48, bottom: 60, left: 68 };
   const totalW = Math.max(container.clientWidth || 880, 500);
-  const totalH = Math.min(520, Math.round(totalW * 0.66));
+  const totalH = Math.min(640, Math.round(totalW * 0.78));
   const W = totalW - margin.left - margin.right;
   const H = totalH - margin.top  - margin.bottom;
 
