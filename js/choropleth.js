@@ -62,7 +62,7 @@ function drawChoropleth(state) {
   // cluster annotations
   const annotations = [
     { lat: 33.1, lon: -90.4, label: "Mississippi Delta", dx: -54, dy: -26 },
-    { lat: 37.4,  lon: -81.7, label: "Appalachian cluster", dx: 46, dy: -20 },
+    { lat: 37.4,  lon: -81.7, label: "Appalachian cluster", dx: -72, dy: -20 },
   ];
   annotations.forEach(ann => {
     const xy = proj([ann.lon, ann.lat]);
@@ -77,7 +77,7 @@ function drawChoropleth(state) {
       .attr("x", x+ann.dx+(ann.dx<0?-4:4))
       .attr("y", y+ann.dy-4)
       .attr("text-anchor", ann.dx<0?"end":"start")
-      .attr("fill","#7a2210")
+      .attr("fill","#3f1608")
       .style("font-family","'Fira Code', monospace")
       .style("font-size","11px")
       .style("font-weight","500")
