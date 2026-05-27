@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>County Health Patterns</title>
+
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/meta.css" />
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+  <script src="js/meta.js" defer></script>
+</head>
+
+<body>
+  <header class="site-header">
+    <h1>Child Poverty, Food Insecurity &amp; Mental Distress Across U.S. Counties</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="meta.html" class="active">County Map</a>
+    </nav>
+  </header>
+
+  <main class="map-page">
+    <section class="controls">
+      <label for="metric-select">Select metric:</label>
+      <select id="metric-select">
+        <option value="v024_rawvalue">Child Poverty Rate</option>
+        <option value="v139_rawvalue">Food Insecurity Rate</option>
+        <option value="v042_rawvalue">Poor Mental Health Days (avg/month)</option>
+        <option value="v145_rawvalue">Frequent Mental Distress Rate</option>
+      </select>
+      <button id="cycle-toggle" class="reset-btn cycle-btn">&#9646;&#9646; Pause</button>
+      <button id="reset-zoom" class="reset-btn" disabled>&#8634; Reset Zoom</button>
+    </section>
+
+    <section class="map-section">
+      <div id="map-container">
+        <svg id="choropleth"></svg>
+        <div id="legend-container"></div>
+      </div>
+
+      <aside id="detail-panel" class="detail-panel">
+        <p class="detail-hint">Click any county to see details.</p>
+      </aside>
+    </section>
+
+    <div id="tooltip" class="tooltip hidden"></div>
+  </main>
+</body>
+</html>

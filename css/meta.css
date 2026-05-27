@@ -1,0 +1,373 @@
+/* ── Page layout ─────────────────────────────────────── */
+.site-header {
+  background: #1a1a2e;
+  color: #eee;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.site-header h1 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.site-header nav a {
+  color: #aac4ff;
+  text-decoration: none;
+  margin-left: 1.2rem;
+  font-size: 0.9rem;
+}
+
+.site-header nav a.active,
+.site-header nav a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.map-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1rem 3rem;
+  background: #f5f7fa;
+  min-height: calc(100vh - 60px);
+}
+
+/* ── Controls ────────────────────────────────────────── */
+.controls {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+}
+
+.controls label {
+  font-weight: 600;
+  color: #333;
+}
+
+#metric-select {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  background: #fff;
+  cursor: pointer;
+}
+
+#metric-select:focus {
+  outline: 2px solid #4a90d9;
+}
+
+/* ── Reset zoom button ───────────────────────────────── */
+.reset-btn {
+  padding: 0.38rem 0.9rem;
+  border: 1px solid #aaa;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  background: #fff;
+  color: #444;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: #1a1a2e;
+  color: #fff;
+  border-color: #1a1a2e;
+}
+
+.reset-btn:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+/* Cycle button — blue when playing, neutral when paused */
+.cycle-btn {
+  background: #1a1a2e;
+  color: #fff;
+  border-color: #1a1a2e;
+}
+
+.cycle-btn:hover {
+  background: #333;
+  border-color: #333;
+}
+
+.cycle-btn.paused {
+  background: #fff;
+  color: #444;
+  border-color: #aaa;
+}
+
+.cycle-btn.paused:hover {
+  background: #1a1a2e;
+  color: #fff;
+  border-color: #1a1a2e;
+}
+
+/* ── Map container ───────────────────────────────────── */
+.map-section {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 1140px;
+}
+
+#map-container {
+  flex: 1 1 auto;
+  min-width: 0;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  padding: 1rem;
+}
+
+#choropleth {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* County paths */
+.county {
+  stroke: #fff;
+  stroke-width: 0.25px;
+  transition: opacity 0.3s ease, stroke 0.2s ease, stroke-width 0.2s ease;
+  cursor: pointer;
+}
+
+.county:hover {
+  stroke: #222;
+  stroke-width: 1.2px;
+}
+
+/* Faded: all non-selected counties when a selection is active */
+.county.faded {
+  opacity: 0.2;
+}
+
+/* Selected: the clicked county — sits on top visually */
+.county.selected {
+  opacity: 1;
+  stroke: #111;
+  stroke-width: 2.5px;
+  filter: brightness(1.15);
+}
+
+/* Top-value county for the current metric — gold glow, defined after .selected
+   so .top stroke wins when both classes are present on the same county */
+.county.top {
+  stroke: #ffd700;
+  stroke-width: 2.5px;
+  filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.9));
+}
+
+/* ── Projected-county overlay (highest value) ────────────────────────────────
+
+   Lives in highlightLayer, above all county paths.
+   pointer-events:none so clicks fall through to the original county paths.
+
+   The drop-shadow has a downward offset (0px 8px …) so when the path floats
+   upward by 5px the shadow appears further below — reinforcing the "lifted"
+   look without any extra JS. */
+
+.projected-county {
+  pointer-events: none;
+  stroke: #111;
+  stroke-width: 2.5px;
+  animation: floatCounty 2s ease-in-out infinite alternate;
+  transform-box: fill-box;     /* SVG: origin relative to the element's bbox */
+  transform-origin: center;
+}
+
+@keyframes floatCounty {
+  from {
+    filter: drop-shadow(0px 6px 10px rgba(0, 0, 0, 0.55));
+    transform: translateY(0px);
+  }
+  to {
+    filter: drop-shadow(0px 12px 14px rgba(0, 0, 0, 0.35));
+    transform: translateY(-5px);
+  }
+}
+
+/* Callout line from centroid to card edge */
+.top-callout {
+  stroke: #555;
+  stroke-width: 1.2px;
+  stroke-dasharray: 4 3;
+  pointer-events: none;
+}
+
+/* Label card — white background with border and shadow */
+.highest-label-bg {
+  fill: rgba(255, 255, 255, 0.96);
+  stroke: #bbb;
+  stroke-width: 1px;
+  filter: drop-shadow(0px 3px 7px rgba(0, 0, 0, 0.22));
+}
+
+.highest-label-title {
+  font-size: 12.5px;
+  font-weight: 700;
+  fill: #111;
+  pointer-events: none;
+}
+
+.highest-label-value {
+  font-size: 10.5px;
+  font-weight: 500;
+  fill: #555;
+  pointer-events: none;
+}
+
+/* State borders overlay */
+.state-border {
+  fill: none;
+  stroke: #555;
+  stroke-width: 0.8px;
+  pointer-events: none;
+}
+
+/* ── Tooltip ─────────────────────────────────────────── */
+.tooltip {
+  position: fixed;
+  background: rgba(20, 20, 40, 0.9);
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  pointer-events: none;
+  z-index: 999;
+  max-width: 220px;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.tooltip.hidden {
+  display: none;
+}
+
+.tooltip strong {
+  display: block;
+  font-size: 0.88rem;
+  margin-bottom: 0.2rem;
+}
+
+/* ── Legend ──────────────────────────────────────────── */
+#legend-container {
+  margin-top: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 0.5rem;
+}
+
+#legend-container svg {
+  display: block;
+}
+
+.legend-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  fill: #333;
+}
+
+.legend-label {
+  font-size: 0.75rem;
+  fill: #555;
+}
+
+/* ── No-data counties ────────────────────────────────── */
+.county.no-data {
+  fill: #ddd;
+}
+
+/* ── Detail panel ────────────────────────────────────── */
+.detail-panel {
+  flex: 0 0 220px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  padding: 1rem 1.1rem;
+  font-size: 0.85rem;
+  color: #333;
+  min-height: 160px;
+}
+
+.detail-hint {
+  color: #999;
+  font-style: italic;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.detail-panel h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  line-height: 1.35;
+}
+
+.detail-panel .state-tag {
+  display: inline-block;
+  background: #e8ecf5;
+  color: #444;
+  border-radius: 4px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.78rem;
+  margin-bottom: 0.6rem;
+}
+
+.top-badge {
+  display: block;
+  background: #fffbe6;
+  border: 1px solid #ffd700;
+  color: #7a5c00;
+  border-radius: 5px;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.detail-metrics {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.detail-metrics li {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-metrics .metric-name {
+  font-size: 0.73rem;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.detail-metrics .metric-value {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.detail-metrics .metric-value.no-data {
+  font-size: 0.82rem;
+  font-weight: 400;
+  color: #bbb;
+}
