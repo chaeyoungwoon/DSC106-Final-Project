@@ -17,7 +17,7 @@ function drawDotPlot(state){
     .filter(d=>d.n>=3)
     .sort((a,b)=>b.meanOverdose-a.meanOverdose);
 
-  const margin={top:20,right:170,bottom:64,left:56};
+  const margin={top:20,right:170,bottom:124,left:56};
   const rowH=24;
   const totalH=rows.length*rowH+margin.top+margin.bottom;
   const totalW=Math.max(container.clientWidth||880,500);
@@ -52,14 +52,17 @@ function drawDotPlot(state){
     .call(a=>a.selectAll("text").attr("fill","#4a4438")
       .style("font-family","'Fira Code', monospace").style("font-size","12px"));
 
-  g.append("text").attr("x",W/2).attr("y",H+50)
+  const xAxisTitle=g.append("text").attr("x",W/2).attr("y",H+42)
     .attr("text-anchor","middle").attr("fill","#2c2820")
-    .style("font-family","'Fira Code', monospace").style("font-size","12px").style("font-weight","500")
-    .text("Mean drug overdose deaths per 100,000 (counties with child poverty > 25%)");
+    .style("font-family","'Fira Code', monospace").style("font-size","11px").style("font-weight","500");
+  xAxisTitle.append("tspan").attr("x",W/2).text("Mean drug overdose deaths per 100,000");
+  xAxisTitle.append("tspan").attr("x",W/2).attr("dy","1.35em")
+    .text("(counties with child poverty > 25%)");
 
   // "clear filter" link -- top right, only visible when a state is selected
   const resetLabel=g.append("text")
-    .attr("x",W+8).attr("y",8)
+    .attr("x",W+margin.right-8).attr("y",-12)
+    .attr("text-anchor","end")
     .attr("fill","#a83318").attr("opacity",0)
     .style("font-family","'Fira Code', monospace").style("font-size","11px")
     .style("cursor","pointer").style("text-decoration","underline")
@@ -132,11 +135,11 @@ function drawDotPlot(state){
     .text(d=>`n=${d.n}`);
 
   // suppression note -- wrapped into two shorter lines so it doesn't clip
-  g.append("text").attr("x",0).attr("y",H+52)
+  g.append("text").attr("x",0).attr("y",H+84)
     .attr("fill","#6e6758")
     .style("font-family","'Fira Code', monospace").style("font-size","9.5px")
     .text("Overdose estimates suppressed for counties with fewer than 10 deaths (2020-22).");
-  g.append("text").attr("x",0).attr("y",H+65)
+  g.append("text").attr("x",0).attr("y",H+99)
     .attr("fill","#6e6758")
     .style("font-family","'Fira Code', monospace").style("font-size","9.5px")
     .text("States with fewer than 3 qualifying counties are excluded. n = 2,010 of 3,143 counties.");

@@ -13,7 +13,7 @@ function drawRaceChart(state) {
 
   const margin = { top: 24, right: 200, bottom: 64, left: 90 };
   const totalW = Math.max(container.clientWidth || 880, 500);
-  const totalH = 260;
+  const totalH = 360;
   const W = totalW - margin.left - margin.right;
   const H = totalH - margin.top  - margin.bottom;
 
