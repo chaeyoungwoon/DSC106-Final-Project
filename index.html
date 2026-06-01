@@ -5,8 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>The Compounding Crisis</title>
   <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/meta-embed.css" />
 </head>
 <body>
+
+  <div id="meta-tooltip" class="meta-tooltip hidden"></div>
 
   <div id="tooltip" role="tooltip" aria-hidden="true">
     <div class="tt-name" id="tt-name"></div>
@@ -25,6 +28,7 @@
       <li><a href="#section-race">03 Race</a></li>
       <li><a href="#section-strip">04 Compounding</a></li>
       <li><a href="#section-dotplot">05 Overdose</a></li>
+      <li><a href="#section-meta">06 Explorer</a></li>
       <li><a href="#section-writeup">Writeup</a></li>
     </ul>
 
@@ -257,6 +261,77 @@
       </div>
     </section>
 
+    <!-- VIZ 6 -->
+    <section class="viz-section" id="section-meta">
+      <div class="section-sidebar">
+        <div class="section-num">06 / County Explorer</div>
+        <h2 class="section-title">Explore every county in detail</h2>
+        <p class="section-body">
+          Cycle through four metrics &mdash; child poverty, food insecurity, mental health
+          days, and mental distress &mdash; with zoom, pan, and click-to-explore on all
+          3,143 counties. Metrics auto-advance every three seconds; pause to focus on one.
+        </p>
+        <p class="section-body">
+          Click any county to zoom in and see its full profile. The highest-value county
+          for the active metric is marked with a gold glow and a floating label.
+        </p>
+        <div class="note">CHR&amp;R 2025. Same dataset as charts 01&ndash;05.</div>
+      </div>
+      <div class="section-main">
+        <div class="viz-frame">
+          <div class="viz-caption">Fig 6 &mdash; County-Level Metric Explorer &mdash; CHR&amp;R 2025</div>
+
+          <div id="meta-graph-root" class="meta-graph-root">
+
+            <div class="meta-controls">
+              <label for="meta-metric-select">Metric:</label>
+              <select id="meta-metric-select">
+                <option value="v024_rawvalue">Child Poverty Rate</option>
+                <option value="v139_rawvalue">Food Insecurity Rate</option>
+                <option value="v042_rawvalue">Poor Mental Health Days (avg/month)</option>
+                <option value="v145_rawvalue">Frequent Mental Distress Rate</option>
+              </select>
+              <button id="meta-cycle-toggle" class="meta-btn meta-cycle-btn">&#9646;&#9646; Pause</button>
+              <button id="meta-reset-zoom"   class="meta-btn" disabled>&#8634; Reset Zoom</button>
+            </div>
+
+            <div class="meta-map-row">
+              <div class="meta-map-container">
+                <svg id="meta-choropleth"></svg>
+                <div id="meta-legend-container"></div>
+              </div>
+              <aside id="meta-detail-panel" class="detail-panel">
+                <p class="detail-hint">Click any county to see details.</p>
+              </aside>
+            </div>
+
+            <section id="meta-county-detail-panel" class="county-detail-panel hidden">
+              <h3 id="meta-detail-county-name">&mdash;</h3>
+              <div class="detail-metrics-grid">
+                <div class="detail-card">
+                  <span class="detail-label">Child Poverty Rate</span>
+                  <strong id="meta-detail-v024_rawvalue">&mdash;</strong>
+                </div>
+                <div class="detail-card">
+                  <span class="detail-label">Food Insecurity Rate</span>
+                  <strong id="meta-detail-v139_rawvalue">&mdash;</strong>
+                </div>
+                <div class="detail-card">
+                  <span class="detail-label">Poor Mental Health Days</span>
+                  <strong id="meta-detail-v042_rawvalue">&mdash;</strong>
+                </div>
+                <div class="detail-card">
+                  <span class="detail-label">Frequent Mental Distress Rate</span>
+                  <strong id="meta-detail-v145_rawvalue">&mdash;</strong>
+                </div>
+              </div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- WRITEUP -->
     <section class="writeup-section" id="section-writeup">
       <div class="writeup-inner">
@@ -344,12 +419,14 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <script src="js/meta-embed.js"></script>
   <script src="js/choropleth.js?v=1779835451"></script>
   <script src="js/scatter.js?v=1779835450"></script>
   <script src="js/racechart.js?v=1779835450"></script>
   <script src="js/stripplots.js?v=1779835451"></script>
   <script src="js/dotplot.js?v=1779835453"></script>
   <script src="js/main.js?v=1779835449"></script>
+  <script>initMetaGraph('meta-graph-root');</script>
 
 </body>
 </html>
