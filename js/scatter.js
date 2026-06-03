@@ -99,12 +99,16 @@ function drawScatter(state) {
     layer.selectAll("circle")
       .on("mousemove",(ev,d)=>showTooltip(ev,d))
       .on("mouseleave",hideTooltip)
-      .on("click",(ev,d)=>fireCountySelect(d.fips));
+      .on("click",(ev,d)=>{
+        fireCountySelect(d.fips);
+        document.getElementById("section-map")
+          ?.scrollIntoView({behavior:"smooth",block:"start"});
+      });
   });
 
   // named county annotations
-  const annotFips  = { "28049":"Holmes Co., MS", "55078":"Menominee Co., WI", "46137":"Ziebach Co., SD" };
-  const offsets    = { "28049":[-20,28], "55078":[16,-22], "46137":[20,14] };
+  const annotFips  = { "28051":"Holmes Co., MS", "55078":"Menominee Co., WI", "46137":"Ziebach Co., SD" };
+  const offsets    = { "28051":[-20,28], "55078":[16,-22], "46137":[20,14] };
   Object.entries(annotFips).forEach(([fips,label])=>{
     const d = state.counties.get(fips);
     if (!d||d.poverty===null||d.food===null) return;
