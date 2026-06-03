@@ -30,19 +30,7 @@ function drawChoropleth(state) {
   const countyFeatures = new Map(
     countiesGeo.features.map(d => [d.id.toString().padStart(5, "0"), d])
   );
-
-  const defs = svg.append("defs");
-  defs.append("marker")
-    .attr("id","selected-county-arrow")
-    .attr("viewBox","0 0 10 10")
-    .attr("refX",8)
-    .attr("refY",5)
-    .attr("markerWidth",5)
-    .attr("markerHeight",5)
-    .attr("orient","auto-start-reverse")
-    .append("path")
-      .attr("d","M 0 0 L 10 5 L 0 10 z")
-      .attr("fill","#1a1814");
+  const [[mapMinX, mapMinY], [mapMaxX, mapMaxY]] = path.bounds(countiesGeo);
 
   const countyPaths = svg.append("g").attr("class", "counties")
     .selectAll("path")
@@ -120,29 +108,58 @@ function drawChoropleth(state) {
     const [cx, cy] = path.centroid(feature);
     if (!Number.isFinite(cx) || !Number.isFinite(cy)) return;
 
-    const labelRight = cx < W * 0.56;
-    const labelX = clamp(cx + (labelRight ? 86 : -86), 30, W - 30);
-    const labelY = clamp(cy - 34, 22, H - 22);
-    const anchor = labelRight ? "start" : "end";
+    const side = [
+      { key:"left",   dist: Math.abs(cx - mapMinX) },
+      { key:"right",  dist: Math.abs(mapMaxX - cx) },
+      { key:"top",    dist: Math.abs(cy - mapMinY) },
+      { key:"bottom", dist: Math.abs(mapMaxY - cy) },
+    ].sort((a,b) => a.dist - b.dist)[0].key;
+
+    const pad = 14;
+    let labelX = cx;
+    let labelY = cy;
+    let lineX = cx;
+    let lineY = cy;
+    let anchor = "middle";
+
+    if (side === "left") {
+      labelX = clamp(mapMinX - pad, 18, W - 18);
+      labelY = clamp(cy, 24, H - 18);
+      lineX = labelX + 5;
+      lineY = labelY - 4;
+      anchor = "end";
+    } else if (side === "right") {
+      labelX = clamp(mapMaxX + pad, 18, W - 18);
+      labelY = clamp(cy, 24, H - 18);
+      lineX = labelX - 5;
+      lineY = labelY - 4;
+      anchor = "start";
+    } else if (side === "top") {
+      labelX = clamp(cx, 30, W - 30);
+      labelY = clamp(mapMinY - pad, 18, H - 18);
+      lineX = labelX;
+      lineY = labelY + 6;
+    } else {
+      labelX = clamp(cx, 30, W - 30);
+      labelY = clamp(mapMaxY + pad, 18, H - 18);
+      lineX = labelX;
+      lineY = labelY - 14;
+    }
 
     selectedCallout.append("line")
-      .attr("x1",labelX).attr("y1",labelY)
+      .attr("x1",lineX).attr("y1",lineY)
       .attr("x2",cx).attr("y2",cy)
-      .attr("stroke","#1a1814")
-      .attr("stroke-width",1.6)
-      .attr("marker-end","url(#selected-county-arrow)");
-
-    selectedCallout.append("circle")
-      .attr("cx",cx).attr("cy",cy).attr("r",4.2)
-      .attr("fill","#f5f1e8")
       .attr("stroke","#1a1814")
       .attr("stroke-width",1.6);
 
     selectedCallout.append("text")
-      .attr("x",labelX + (labelRight ? 6 : -6))
-      .attr("y",labelY - 5)
+      .attr("x",labelX)
+      .attr("y",labelY)
       .attr("text-anchor",anchor)
       .attr("fill","#1a1814")
+      .attr("stroke","#f5f1e8")
+      .attr("stroke-width",3)
+      .attr("paint-order","stroke")
       .style("font-family","'Fira Code', monospace")
       .style("font-size","10.5px")
       .style("font-weight","600")
