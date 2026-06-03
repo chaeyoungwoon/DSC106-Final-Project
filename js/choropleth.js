@@ -8,6 +8,8 @@ function drawChoropleth(state) {
   const container = document.getElementById("map-container");
   if (!container) return;
 
+  const doubleBurdenStroke = "#6F7D5C";
+
   const W = container.clientWidth || 880;
   const H = Math.round(W * 0.615);
 
@@ -36,7 +38,7 @@ function drawChoropleth(state) {
       })
       .attr("stroke", d => {
         const c = state.counties.get(d.id.toString().padStart(5, "0"));
-        return (c && c.doubleBurden) ? "#c07818" : "none";
+        return (c && c.doubleBurden) ? doubleBurdenStroke : "none";
       })
       .attr("stroke-width", d => {
         const c = state.counties.get(d.id.toString().padStart(5, "0"));
@@ -138,7 +140,7 @@ function drawChoropleth(state) {
         const id = d.id.toString().padStart(5, "0");
         const c  = state.counties.get(id);
         if (id === fips) return "#1a1814";
-        return (c && c.doubleBurden) ? "#c07818" : "none";
+        return (c && c.doubleBurden) ? doubleBurdenStroke : "none";
       })
       .attr("stroke-width", d => {
         const id = d.id.toString().padStart(5, "0");

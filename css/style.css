@@ -386,7 +386,7 @@ body {
 .double-swatch {
   width: 20px;
   height: 13px;
-  border: 1.5px solid var(--amber);
+  border: 1.5px solid #6F7D5C;
   background: rgba(160,50,20,0.1);
   flex-shrink: 0;
 }
