@@ -27,6 +27,22 @@ function drawChoropleth(state) {
     .interpolator(d3.interpolateRgb("#ede8dc", "#7a1c08"));
 
   const countiesGeo = topojson.feature(state.topo, state.topo.objects.counties);
+  const countyFeatures = new Map(
+    countiesGeo.features.map(d => [d.id.toString().padStart(5, "0"), d])
+  );
+
+  const defs = svg.append("defs");
+  defs.append("marker")
+    .attr("id","selected-county-arrow")
+    .attr("viewBox","0 0 10 10")
+    .attr("refX",8)
+    .attr("refY",5)
+    .attr("markerWidth",5)
+    .attr("markerHeight",5)
+    .attr("orient","auto-start-reverse")
+    .append("path")
+      .attr("d","M 0 0 L 10 5 L 0 10 z")
+      .attr("fill","#1a1814");
 
   const countyPaths = svg.append("g").attr("class", "counties")
     .selectAll("path")
@@ -86,6 +102,52 @@ function drawChoropleth(state) {
       .style("font-weight","500")
       .text(ann.label);
   });
+
+  const selectedCallout = svg.append("g")
+    .attr("class","selected-county-callout")
+    .attr("pointer-events","none");
+
+  function clamp(v, min, max) {
+    return Math.max(min, Math.min(max, v));
+  }
+
+  function updateSelectedCallout(fips) {
+    selectedCallout.selectAll("*").remove();
+    const feature = countyFeatures.get(fips);
+    const county = state.counties.get(fips);
+    if (!feature || !county) return;
+
+    const [cx, cy] = path.centroid(feature);
+    if (!Number.isFinite(cx) || !Number.isFinite(cy)) return;
+
+    const labelRight = cx < W * 0.56;
+    const labelX = clamp(cx + (labelRight ? 86 : -86), 30, W - 30);
+    const labelY = clamp(cy - 34, 22, H - 22);
+    const anchor = labelRight ? "start" : "end";
+
+    selectedCallout.append("line")
+      .attr("x1",labelX).attr("y1",labelY)
+      .attr("x2",cx).attr("y2",cy)
+      .attr("stroke","#1a1814")
+      .attr("stroke-width",1.6)
+      .attr("marker-end","url(#selected-county-arrow)");
+
+    selectedCallout.append("circle")
+      .attr("cx",cx).attr("cy",cy).attr("r",4.2)
+      .attr("fill","#f5f1e8")
+      .attr("stroke","#1a1814")
+      .attr("stroke-width",1.6);
+
+    selectedCallout.append("text")
+      .attr("x",labelX + (labelRight ? 6 : -6))
+      .attr("y",labelY - 5)
+      .attr("text-anchor",anchor)
+      .attr("fill","#1a1814")
+      .style("font-family","'Fira Code', monospace")
+      .style("font-size","10.5px")
+      .style("font-weight","600")
+      .text(`${county.name}, ${county.state}`);
+  }
 
   buildMapLegend(colorScale);
 
@@ -149,6 +211,7 @@ function drawChoropleth(state) {
         const c = state.counties.get(id);
         return (c && c.doubleBurden) ? doubleBurdenStrokeWidth : 0;
       });
+    updateSelectedCallout(fips);
   });
 }
 
