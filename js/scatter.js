@@ -153,6 +153,7 @@ function drawScatter(state) {
 function buildScatterCountySearch(state) {
   const input = document.getElementById("scatter-county-search");
   const list = document.getElementById("scatter-county-options");
+  const clearButton = document.getElementById("scatter-clear-selection");
   if (!input || !list) return;
 
   const counties = [...state.counties.values()]
@@ -172,5 +173,14 @@ function buildScatterCountySearch(state) {
     if (!county) return;
     fireStateChange(county.state);
     fireCountySelect(county.fips);
+  });
+
+  clearButton?.addEventListener("click", () => {
+    input.value = "";
+    fireCountySelect(null);
+  });
+
+  registerCountyListener(fips => {
+    if (!fips) input.value = "";
   });
 }
