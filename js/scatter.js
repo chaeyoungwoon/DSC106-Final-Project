@@ -108,7 +108,7 @@ function drawScatter(state) {
 
   // named county annotations
   const annotFips  = { "28051":"Holmes Co., MS", "55078":"Menominee Co., WI", "46137":"Ziebach Co., SD" };
-  const offsets    = { "28051":[-20,28], "55078":[16,-22], "46137":[20,14] };
+  const offsets    = { "28051":[24,-26], "55078":[16,-22], "46137":[20,14] };
   Object.entries(annotFips).forEach(([fips,label])=>{
     const d = state.counties.get(fips);
     if (!d||d.poverty===null||d.food===null) return;
