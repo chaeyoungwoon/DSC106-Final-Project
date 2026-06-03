@@ -295,11 +295,12 @@ body {
 /* ========== SLIDER (Viz 1) ========== */
 
 .slider-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: max-content minmax(140px, 1fr) max-content;
   align-items: center;
-  gap: 16px;
+  column-gap: 16px;
+  row-gap: 6px;
   margin-bottom: 14px;
-  flex-wrap: wrap;
 }
 
 .slider-label {
@@ -321,7 +322,6 @@ body {
 #poverty-slider {
   -webkit-appearance: none;
   appearance: none;
-  flex: 1;
   min-width: 120px;
   height: 4px;
   background: var(--border);
@@ -351,6 +351,9 @@ body {
 }
 
 .slider-count {
+  grid-column: 2 / 3;
+  justify-self: end;
+  text-align: right;
   font-family: var(--mono);
   font-size: 9.5px;
   color: var(--muted);
@@ -586,6 +589,23 @@ body {
   .nav-links { display: none; }
   .page-wrap { padding: 0 18px; }
   .project-title { font-size: 2.2rem; }
+
+  .slider-row {
+    grid-template-columns: minmax(0, 1fr) max-content;
+  }
+
+  .slider-label {
+    grid-column: 1 / -1;
+  }
+
+  #poverty-slider {
+    grid-column: 1 / 2;
+    min-width: 0;
+  }
+
+  .slider-count {
+    grid-column: 1 / 2;
+  }
 }
 
 /* ========== NAV SEARCH ========== */
