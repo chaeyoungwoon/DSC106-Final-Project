@@ -115,7 +115,11 @@ function drawChoropleth(state) {
       { key:"bottom", dist: Math.abs(mapMaxY - cy) },
     ].sort((a,b) => a.dist - b.dist)[0].key;
 
+    const label = `${county.name}, ${county.state}`;
+    const edgePad = 18;
     const pad = 14;
+    const labelWidth = Math.min(label.length * 6.4, W - edgePad * 2);
+    const halfLabelWidth = labelWidth / 2;
     let labelX = cx;
     let labelY = cy;
     let lineX = cx;
@@ -123,24 +127,24 @@ function drawChoropleth(state) {
     let anchor = "middle";
 
     if (side === "left") {
-      labelX = clamp(mapMinX - pad, 18, W - 18);
+      labelX = edgePad;
       labelY = clamp(cy, 24, H - 18);
-      lineX = labelX + 5;
-      lineY = labelY - 4;
-      anchor = "end";
-    } else if (side === "right") {
-      labelX = clamp(mapMaxX + pad, 18, W - 18);
-      labelY = clamp(cy, 24, H - 18);
-      lineX = labelX - 5;
+      lineX = labelX + labelWidth + 5;
       lineY = labelY - 4;
       anchor = "start";
+    } else if (side === "right") {
+      labelX = W - edgePad;
+      labelY = clamp(cy, 24, H - 18);
+      lineX = labelX - labelWidth - 5;
+      lineY = labelY - 4;
+      anchor = "end";
     } else if (side === "top") {
-      labelX = clamp(cx, 30, W - 30);
+      labelX = clamp(cx, edgePad + halfLabelWidth, W - edgePad - halfLabelWidth);
       labelY = clamp(mapMinY - pad, 18, H - 18);
       lineX = labelX;
       lineY = labelY + 6;
     } else {
-      labelX = clamp(cx, 30, W - 30);
+      labelX = clamp(cx, edgePad + halfLabelWidth, W - edgePad - halfLabelWidth);
       labelY = clamp(mapMaxY + pad, 18, H - 18);
       lineX = labelX;
       lineY = labelY - 14;
@@ -163,7 +167,7 @@ function drawChoropleth(state) {
       .style("font-family","'Fira Code', monospace")
       .style("font-size","10.5px")
       .style("font-weight","600")
-      .text(`${county.name}, ${county.state}`);
+      .text(label);
   }
 
   buildMapLegend(colorScale);
