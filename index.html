@@ -141,8 +141,8 @@
           (tribal nations), and Ziebach County (Great Plains).
         </p>
         <p class="section-body">
-          The state filter highlights one state while keeping all others visible. You can
-          also search for a specific county in the nav bar above.
+          The state filter highlights one state while keeping all others visible. The
+          county search jumps directly to a named county.
         </p>
         <div class="note">
           All language describes co-occurrence. No causal direction is implied.
@@ -156,6 +156,9 @@
             <select class="control-select state-select" id="scatter-state-select">
               <option value="all">All states</option>
             </select>
+            <span class="control-label">County:</span>
+            <input class="control-input" id="scatter-county-search" list="scatter-county-options" placeholder="Search county..." autocomplete="off" />
+            <datalist id="scatter-county-options"></datalist>
             <span class="linked-state-banner" id="scatter-banner"></span>
           </div>
           <div id="scatter-container"><div class="viz-loading">Loading&hellip;</div></div>

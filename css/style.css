@@ -426,6 +426,21 @@ body {
 
 .control-select:focus { outline: 1px solid var(--terra); }
 
+.control-input {
+  background: var(--bg);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  padding: 5px 10px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  width: 190px;
+  outline: none;
+}
+
+.control-input:focus {
+  border-color: var(--terra);
+}
+
 /* ========== TOOLTIP ========== */
 
 #tooltip {

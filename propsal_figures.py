@@ -8,7 +8,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.lines import Line2D
-from matplotlib.colors import LinearSegmentedColormap
 from scipy import stats
 import os, warnings
 
@@ -179,28 +178,21 @@ print("  saved fig1")
 # FIG 2 -- Scatter
 print("Figure 2...")
 
-sdf = df[["poverty","food","rural","double_burden"]].dropna(subset=["poverty","food"]).copy()
+sdf = df[["poverty","food","double_burden"]].dropna(subset=["poverty","food"]).copy()
 sdf["pov_pct"]  = sdf["poverty"] * 100
 sdf["food_pct"] = sdf["food"]    * 100
 
 fig, ax = plt.subplots(figsize=(9, 6.8))
-fig.subplots_adjust(top=0.84, bottom=0.10, left=0.09, right=0.88)
+fig.subplots_adjust(top=0.84, bottom=0.10, left=0.09, right=0.97)
 ax.set_facecolor(BG)
-
-rural_cmap = LinearSegmentedColormap.from_list("r", [C_TEAL, C_STONE, C_AMBER], N=256)
-rural_norm = plt.Normalize(0, 1)
 
 mask_o  = ~sdf["double_burden"]
 mask_db =  sdf["double_burden"]
 
 ax.scatter(sdf.loc[mask_o,  "pov_pct"], sdf.loc[mask_o,  "food_pct"],
-           c=sdf.loc[mask_o,  "rural"].fillna(0.3),
-           cmap=rural_cmap, norm=rural_norm,
-           s=5, alpha=0.32, linewidths=0, rasterized=True, zorder=2)
+           c=C_STONE, s=5, alpha=0.32, linewidths=0, rasterized=True, zorder=2)
 ax.scatter(sdf.loc[mask_db, "pov_pct"], sdf.loc[mask_db, "food_pct"],
-           c=sdf.loc[mask_db, "rural"].fillna(0.5),
-           cmap=rural_cmap, norm=rural_norm,
-           s=18, alpha=0.85, linewidths=0.9,
+           c=C_RED, s=18, alpha=0.85, linewidths=0.9,
            edgecolors=C_AMBER, rasterized=True, zorder=3)
 
 ax.axvline(p75_pov * 100,  color=C_RED, lw=0.9, linestyle="--", alpha=0.5, zorder=1)
@@ -231,19 +223,12 @@ ax.text(0.98, 0.06, f"r = {r_val:.3f},  n = {len(sdf):,}",
         transform=ax.transAxes, ha="right", va="bottom",
         fontsize=11, color=C_RED, fontweight="bold")
 
-cbar = fig.colorbar(
-    plt.cm.ScalarMappable(norm=rural_norm, cmap=rural_cmap),
-    ax=ax, fraction=0.026, pad=0.02)
-cbar.set_label("% Rural", fontsize=8, color=SLATE)
-cbar.ax.tick_params(labelsize=7.5, colors=SLATE)
-cbar.outline.set_visible(False)
-
 ax.set_xlabel("Children in Poverty % (2023)", labelpad=8)
 ax.set_ylabel("Food Insecurity % (2022)", labelpad=8)
 
 add_titles(fig,
     "Where child poverty rises, food insecurity follows -- almost without exception",
-    "Each dot = one county. Amber border = counties in the top 25% on BOTH child poverty AND food insecurity. Color = % rural.")
+    "Each dot = one county. Amber border = counties in the top 25% on BOTH child poverty AND food insecurity.")
 
 plt.savefig("figures/fig2_poverty_food_scatter.png")
 plt.close()

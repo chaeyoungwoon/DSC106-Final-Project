@@ -21,10 +21,6 @@ function drawScatter(state) {
   const xScale = d3.scaleLinear().domain([0, 0.58]).range([0, W]);
   const yScale = d3.scaleLinear().domain([0, 0.30]).range([H, 0]);
 
-  const ruralColor = d3.scaleSequential()
-    .domain([0, 1])
-    .interpolator(d3.interpolateRgb("#2e6080","#b89840"));
-
   // gridlines
   g.append("g").selectAll("line.gh").data(yScale.ticks(5)).join("line")
     .attr("x1",0).attr("x2",W).attr("y1",d=>yScale(d)).attr("y2",d=>yScale(d))
@@ -65,18 +61,6 @@ function drawScatter(state) {
     .style("font-family","'Fira Code', monospace").style("font-size","11px")
     .text("r = 0.768  |  n = 3,143 counties");
 
-  // rural/urban legend
-  const lx=W-120, ly=6;
-  const defs=svg.append("defs");
-  const grad=defs.append("linearGradient").attr("id","rural-grad").attr("x1","0%").attr("x2","100%");
-  d3.range(11).forEach(i=>grad.append("stop").attr("offset",`${i*10}%`).attr("stop-color",ruralColor(i/10)));
-  g.append("rect").attr("x",lx).attr("y",ly).attr("width",100).attr("height",8)
-    .attr("fill","url(#rural-grad)").attr("rx",1);
-  g.append("text").attr("x",lx).attr("y",ly+20).attr("fill","#9e9788")
-    .style("font-family","'Fira Code', monospace").style("font-size","10px").text("Urban");
-  g.append("text").attr("x",lx+100).attr("y",ly+20).attr("text-anchor","end")
-    .attr("fill","#9e9788").style("font-family","'Fira Code', monospace").style("font-size","10px").text("Rural");
-
   // dot layers -- bg first so db renders on top
   const bgLayer = g.append("g").attr("class","dots-bg");
   const dbLayer = g.append("g").attr("class","dots-db");
@@ -85,7 +69,7 @@ function drawScatter(state) {
     .data(pts.filter(d=>!d.doubleBurden)).join("circle")
       .attr("cx",d=>xScale(d.poverty)).attr("cy",d=>yScale(d.food))
       .attr("r",2.3)
-      .attr("fill",d=>d.rural!==null?ruralColor(d.rural):"#9e9788")
+      .attr("fill","#9e9788")
       .attr("opacity",0.52);
 
   const dbDots = dbLayer.selectAll("circle")
@@ -137,8 +121,8 @@ function drawScatter(state) {
     bgDots
       .transition().duration(200)
       .attr("fill",d=>{
-        if(abbr==="all") return d.rural!==null?ruralColor(d.rural):"#9e9788";
-        return d.state===abbr?(d.rural!==null?ruralColor(d.rural):"#6a8ca0"):"#c8c2b0";
+        if(abbr==="all") return "#9e9788";
+        return d.state===abbr?"#2e6080":"#c8c2b0";
       })
       .attr("opacity",d=>abbr==="all"?0.52:(d.state===abbr?0.88:0.15))
       .attr("r",d=>abbr==="all"?2.3:(d.state===abbr?2.8:1.6));
@@ -161,5 +145,32 @@ function drawScatter(state) {
       .attr("cx",xScale(d.poverty))
       .attr("cy",yScale(d.food))
       .attr("opacity",1);
+  });
+
+  buildScatterCountySearch(state);
+}
+
+function buildScatterCountySearch(state) {
+  const input = document.getElementById("scatter-county-search");
+  const list = document.getElementById("scatter-county-options");
+  if (!input || !list) return;
+
+  const counties = [...state.counties.values()]
+    .filter(d => d.name && d.state && d.poverty !== null && d.food !== null)
+    .sort((a,b) => `${a.name}, ${a.state}`.localeCompare(`${b.name}, ${b.state}`));
+  const lookup = new Map(counties.map(d => [`${d.name}, ${d.state}`.toLowerCase(), d]));
+
+  list.innerHTML = "";
+  counties.forEach(d => {
+    const option = document.createElement("option");
+    option.value = `${d.name}, ${d.state}`;
+    list.appendChild(option);
+  });
+
+  input.addEventListener("change", () => {
+    const county = lookup.get(input.value.trim().toLowerCase());
+    if (!county) return;
+    fireStateChange(county.state);
+    fireCountySelect(county.fips);
   });
 }
