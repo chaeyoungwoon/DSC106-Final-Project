@@ -72,9 +72,9 @@ function drawChoropleth(state) {
     const [x, y] = xy;
     svg.append("line")
       .attr("x1",x).attr("y1",y).attr("x2",x+ann.dx).attr("y2",y+ann.dy)
-      .attr("stroke","#c07818").attr("stroke-width",1).attr("opacity",0.85);
+      .attr("stroke", doubleBurdenStroke).attr("stroke-width",1.4).attr("opacity",0.95);
     svg.append("circle").attr("cx",x).attr("cy",y).attr("r",3)
-      .attr("fill","#c07818").attr("opacity",0.9);
+      .attr("fill", doubleBurdenStroke).attr("opacity",0.95);
     svg.append("text")
       .attr("x", x+ann.dx+(ann.dx<0?-4:4))
       .attr("y", y+ann.dy-4)
