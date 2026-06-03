@@ -9,6 +9,7 @@ function drawChoropleth(state) {
   if (!container) return;
 
   const doubleBurdenStroke = "#6F7D5C";
+  const doubleBurdenStrokeWidth = 1.2;
 
   const W = container.clientWidth || 880;
   const H = Math.round(W * 0.615);
@@ -42,7 +43,7 @@ function drawChoropleth(state) {
       })
       .attr("stroke-width", d => {
         const c = state.counties.get(d.id.toString().padStart(5, "0"));
-        return (c && c.doubleBurden) ? 0.8 : 0;
+        return (c && c.doubleBurden) ? doubleBurdenStrokeWidth : 0;
       })
       .on("mousemove", (event, d) => {
         const c = state.counties.get(d.id.toString().padStart(5, "0"));
@@ -72,9 +73,9 @@ function drawChoropleth(state) {
     const [x, y] = xy;
     svg.append("line")
       .attr("x1",x).attr("y1",y).attr("x2",x+ann.dx).attr("y2",y+ann.dy)
-      .attr("stroke", doubleBurdenStroke).attr("stroke-width",1.4).attr("opacity",0.95);
+      .attr("stroke","#1a1814").attr("stroke-width",1.4).attr("opacity",0.95);
     svg.append("circle").attr("cx",x).attr("cy",y).attr("r",3)
-      .attr("fill", doubleBurdenStroke).attr("opacity",0.95);
+      .attr("fill","#1a1814").attr("opacity",0.95);
     svg.append("text")
       .attr("x", x+ann.dx+(ann.dx<0?-4:4))
       .attr("y", y+ann.dy-4)
@@ -146,7 +147,7 @@ function drawChoropleth(state) {
         const id = d.id.toString().padStart(5, "0");
         if (id === fips) return 2.5;
         const c = state.counties.get(id);
-        return (c && c.doubleBurden) ? 0.8 : 0;
+        return (c && c.doubleBurden) ? doubleBurdenStrokeWidth : 0;
       });
   });
 }
